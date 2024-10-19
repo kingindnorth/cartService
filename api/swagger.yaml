@@ -1,0 +1,193 @@
+swagger: "2.0"
+info:
+  title: Cart MicroService API
+  description: API for managing shopping cart actions such as adding products, updating quantities, and checkout.
+  version: 1.0.0
+  contact:
+    email: prajjawal.tiwari.0311@gmail.com
+
+basePath: /cart
+
+paths:
+  /add-product:
+    post:
+      summary: "Add product to cart"
+      operationId: "addProductToCart"
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/AddProductRequest'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CartResponse'
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        404:
+          description: Cart not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /my-cart:
+    get:
+      summary: "Get cart for a customer"
+      operationId: "getMyCart"
+      parameters:
+        - in: query
+          name: customerId
+          type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CartResponse'
+        404:
+          description: Cart not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /update-product-quantity:
+    post:
+      summary: "Update product quantity in cart"
+      operationId: "updateProductQuantity"
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateProductRequest'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CartResponse'
+        404:
+          description: Cart or Product not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /remove-product:
+    delete:
+      summary: "Remove product from cart"
+      operationId: "deleteCartProduct"
+      parameters:
+        - in: query
+          name: customerId
+          type: string
+          required: true
+        - in: query
+          name: productId
+          type: string
+          required: true
+      responses:
+        200:
+          description: Product removed successfully
+        404:
+          description: Cart or Product not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+  /checkout:
+    post:
+      summary: "Checkout and pay"
+      operationId: "checkoutAndPay"
+      parameters:
+        - in: query
+          name: customerId
+          type: string
+          required: true
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/CartResponse'
+        404:
+          description: Cart not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+
+definitions:
+  AddProductRequest:
+    type: object
+    properties:
+      customerId:
+        type: string
+      productId:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+
+  UpdateProductRequest:
+    type: object
+    properties:
+      customerId:
+        type: string
+      productId:
+        type: string
+      quantity:
+        type: integer
+      price:
+        type: number
+
+  CartResponse:
+    type: object
+    properties:
+      customerId:
+        type: string
+      items:
+        type: array
+        items:
+          type: object
+          properties:
+            productId:
+              type: string
+            name:
+              type: string
+            quantity:
+              type: integer
+            price:
+              type: number
+            totalPrice:
+              type: number
+      totalAmount:
+        type: number
+
+  ErrorModel:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+      details:
+        type: string
